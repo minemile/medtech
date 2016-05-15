@@ -50,13 +50,13 @@
             <li><a href="{% url 'index' %}">Home</a></li>
             {% if user.is_authenticated %}
               <li><a href="{% url 'add_hospital' %}">Add new hospital</a></li>
-              <li><a href="{% url 'profile' %}">Profile</a></li>
+              <li><a href="{% url 'profile' user.username %}">Profile</a></li>
               <li><a href="{% url 'auth_logout' %}?next=/med/">Logout</a></li>
             {% else %}
               <li><a href="{% url 'auth_login' %}">Login</a></li>
               <li><a href="{% url 'registration_register' %}">Register Here</a></li>
             {% endif %}
-            <li><a href="{% url 'about' %}">About</a></li>
+
           </ul>
         </div>
       </div>

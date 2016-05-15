@@ -4,14 +4,16 @@ from .models import Hospital, Doctor
 
 class HospitalForm(forms.ModelForm):
     name = forms.CharField(max_length=100, help_text = 'Enter Hospital name.')
-    address = forms.CharField(max_length=100)
+    address = forms.CharField(max_length=100, help_text = 'Enter address')
+    likes = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
+    slug = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Hospital
         fields = ('name', 'address')
 
 
-class DoctorForm(forms.ModelForm):
+class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:

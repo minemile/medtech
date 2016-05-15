@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load bootstrap_toolkit %}
+{% block title %}Register{% endblock %}
+
+{% block body_block %}
+{% if user.is_authenticated %}
+<form id="user_form" method="post" action="{%url 'profile' user.username %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  <h2 class="form-signin-heading">User Profile</h2>
+  {{ user_form|as_bootstrap }}
+  {{ profile_form|as_bootstrap }}
+  <br/>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% else %}
+<h1> You should <a href="{% url 'registration_register' %}">register</a> first</h1>
+{% endif %}
+{% endblock %}
