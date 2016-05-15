@@ -4,56 +4,46 @@
 
 {% block title %}Index{% endblock %}
 
-	{% block body_block %}
-
-         <div class="page-header">
-                {% if user.is_authenticated %}
-          <h1>Rango says... hello {{ user.username }}!</h1>
-	    {% else %}
-	        <h1>Rango says... hello world!</h1>
-	    {% endif %}
-        </div>
+{% block body_block %}
 
          <div class="row placeholders">
             <div class="col-xs-12 col-sm-6 placeholder">
 
-                <div class="panel panel-primary">
+              <div class="panel panel-primary">
                 <div class="panel-heading">
-                <h3 class="panel-title">Categories</h3>
+                	<h3 class="panel-title">Hospitals</h3>
                 </div>
-                </div>
+              </div>
 
-              {% if categories %}
+          {% if hospitals %}
 	            <ul class="list-group">
-	                {% for category in categories %}
-	                 <li class="list-group-item"><a href="{% url 'category'  category.slug %}">{{ category.name }}</a></li>
-	                {% endfor %}
-	            </ul>
+	              {% for hospital in hospitals %}
+	                <li class="list-group-item"><a href="{% url 'hospital'  hospital.slug %}">{{ hospital.name }}</a></li>
+	              {% endfor %}
+	          	</ul>
 	        {% else %}
-	            <strong>There are no categories present.</strong>
+	            <strong>There are no hospitals present.</strong>
 	        {% endif %}
-
             </div>
+
             <div class="col-xs-12 col-sm-6 placeholder">
               <div class="panel panel-primary">
                 <div class="panel-heading">
-                <h3 class="panel-title">Pages</h3>
+                	<h3 class="panel-title">Doctors</h3>
                 </div>
-                </div>
+              </div>
 
-                {% if pages %}
-	            <ul class="list-group">
-	                {% for page in pages %}
-	                 <li class="list-group-item"><a href="{{page.url}}">{{ page.title }}</a></li>
-	                {% endfor %}
-	            </ul>
-	        {% else %}
-	            <strong>There are no categories present.</strong>
-	        {% endif %}
+              {% if doctors %}
+	            	<ul class="list-group">
+		              {% for doctor in doctors %}
+		                <li class="list-group-item"><a href="{% url 'profile' doctor.username }}">{{ doctor.username }}</a></li>
+		            	{% endfor %}
+	            	</ul>
+	        		{% else %}
+	            	<strong>There are no doctors present.</strong>
+	        		{% endif %}
             </div>
 
           </div>
 
-
-       <p> visits: {{ visits }}</p>
-	{% endblock %}
+{% endblock %}

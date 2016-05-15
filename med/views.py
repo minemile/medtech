@@ -9,9 +9,5 @@ from .forms import HospitalForm, DoctorForm, DoctorProfileForm
 def index(request):
     hospital_list = Hospital.objects.all()
     doctor_list = Doctor.objects.order_by('-likes')[:5]
-
     context_dict = {'hospitals': hospital_list, 'doctors': doctor_list}
-
-    response = render (request, 'med/index.html', context_dict)
-
-    return response
+    return render(request, 'med/index.html', context_dict)
