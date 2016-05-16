@@ -24,4 +24,4 @@ class UserForm(forms.ModelForm):
 class DoctorProfileForm(forms.ModelForm):
     class Meta:
         model = Doctor
-        fields = ('price', 'picture')
+        fields = ('price', 'picture', 'hospital')

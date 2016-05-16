@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'med.apps.MedConfig',
     'registration',
-    'bootstrap_toolkit',
+    'bootstrap3',
 ]
 
 MIDDLEWARE_CLASSES = [

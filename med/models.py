@@ -4,8 +4,8 @@ from django.template.defaultfilters import slugify
 
 
 class Hospital(models.Model):
-    name = models.CharField(max_length=100, unique = True)
-    address = models.CharField(max_length=100, unique = True)
+    name = models.CharField(max_length=100, unique=True)
+    address = models.CharField(max_length=100, unique=True)
     likes = models.IntegerField(default=0)
     slug = models.SlugField()
 

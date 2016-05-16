@@ -14,9 +14,9 @@ def index(request):
     context_dict = {'hospitals': hospital_list, 'doctors': doctor_list}
     return render(request, 'med/index.html', context_dict)
 
-def add_hospital(request, hospital_name_slug):
+def add_hospital(request):
     if request.method == 'POST':
-        form = HospitalForm(reqeust.POST)
+        form = HospitalForm(request.POST)
         if form.is_valid():
             hos = form.save(commit=True)
             return index(request)
@@ -27,10 +27,9 @@ def add_hospital(request, hospital_name_slug):
 
     return render(request, 'med/add_hospital.html', {'form': form})
 
-def profile(request, profile_name):
+def edit_profile(request):
     user = request.user
     if request.method == 'POST':
-        print("sosi")
         user_form = UserForm(data=request.POST, instance=request.user)
         profile_form = DoctorProfileForm(data=request.POST, instance=request.user)
         if user_form.is_valid() and profile_form.is_valid():
@@ -42,12 +41,16 @@ def profile(request, profile_name):
             if 'picture' in request.FILES:
                 profile.picture = request.FILES['picture']
             profile.save()
-            print(profile_name)
             return HttpResponseRedirect('med/profile/{0}/'.format(profile_name))
-
         else:
              print(user_form.errors, profile_form.errors)
     else:
         user_form = UserForm(instance = user)
         profile_form = DoctorProfileForm(instance = user)
     return render(request, 'med/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+
+def profile(request):
+    pass
+
+def hospital(request, hospital_name_slug):
+    pass

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load bootstrap_toolkit %}
+{% load bootstrap3 %}
 {% block title %}Register{% endblock %}
 
 {% block body_block %}
@@ -7,8 +7,8 @@
 <form id="user_form" method="post" action="{%url 'profile' user.username %}" enctype="multipart/form-data">
   {% csrf_token %}
   <h2 class="form-signin-heading">User Profile</h2>
-  {{ user_form|as_bootstrap }}
-  {{ profile_form|as_bootstrap }}
+  {% bootstrap_form user_form %}
+  {% bootstrap_form profile_form %}
   <br/>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>

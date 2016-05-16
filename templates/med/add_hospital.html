@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load bootstrap_toolkit %}
+{% load bootstrap3 %}
 
 {% block title %}Add hospital{% endblock %}
 
@@ -9,18 +9,7 @@
     <h2 class="form-signin-heading">Add a Hospital</a></h2>
       {% csrf_token %}
 
-      {{ form|as_bootstrap }}
-
-      {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-      {% endfor %}
-
-      {% for field in form.visible_fields %}
-        {{ field.errors }}
-        {{ field.help_text }}
-        {{ field }}<br/>
-      {% endfor %}
-      <br/>
+      {% bootstrap_form form %}
 
       <button class="btn btn-primary" type="submit" name="submit">Create Hospital</button>
   </form>
