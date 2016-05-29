@@ -4,8 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 
-from .models import Hospital, Doctor
+from .models import Hospital, Doctor, DiseaseCategory
 from .forms import HospitalForm, UserForm, DoctorProfileForm
+
+from .bing_search import run_query
 
 
 def index(request):
@@ -59,6 +61,16 @@ def profile(request, profile_name):
         pass
     return render(request, 'med/profile.html', context_dict)
 
+def disease(request, disease_name):
+    context_dict = {}
+    try:
+        disease = DiseaseCategory.objects.get(name=disease_name)
+        doctors = Doctor.objects.filter(disease=disease)
+        context_dict['doctors'] = doctors
+        context_dict['disease'] = disease
+    except DiseaseCategory.DoesNotExist:
+        pass
+    return render(request, 'med/disease.html', context_dict)
 
 def hospital(request, hospital_name_slug):
     context_dict = {}
@@ -70,3 +82,34 @@ def hospital(request, hospital_name_slug):
     except Hospital.DoesNotExist:
         pass
     return render(request, 'med/hospital.html', context_dict)
+
+@login_required
+def like_doc(request):
+    doc_id = None
+    if request.method == 'GET':
+        doc_id = request.GET['doctor_id']
+    likes=0
+    if doc_id:
+        doc = Doctor.objects.get(id=int(doc_id))
+        if doc:
+            likes = doc.likes + 1
+            doc.likes = likes
+            doc.save()
+    return HttpResponse(likes)
+
+def get_disease_list(max_results=0, starts_with=''):
+    dis_list = []
+    if starts_with:
+        dis_list = DiseaseCategory.objects.filter(name__istartswith=starts_with)
+    if max_results > 0 and dis_list:
+        if dis_list.count() > max_results:
+            dis_list = dis_list[:max_results]
+    return dis_list
+
+def suggest_disease(request):
+    dis_list = []
+    starts_with = ''
+    if request.method == 'GET':
+        starts_with = request.GET['suggestion']
+    dis_list = get_disease_list(8, starts_with)
+    return render(request, 'med/dis.html', {'diss': dis_list})

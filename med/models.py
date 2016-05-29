@@ -27,7 +27,8 @@ class DiseaseCategory(models.Model):
     avg_price = models.FloatField(default=0)
 
     def save(self, *args, **kwargs):
-        avg_price = Doctor.objects.filter(disease=self).aggregate(Avg('price'))
+        if Doctor.objects.filter(disease=self).count():
+            self.avg_price = Doctor.objects.filter(disease=self).aggregate(Avg('price'))
         super(DiseaseCategory, self).save(*args, **kwargs)
 
     def __str__(self):

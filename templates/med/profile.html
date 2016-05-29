@@ -1,15 +1,24 @@
 {% extends 'base.html' %}
-{% block title %}{{ hospital_name }}{% endblock %}
+{% block title %}{{ doctor }}{% endblock %}
 
 {% block body_block %}
   {% if doctor %}
   <div class="page-header">
-    <h1>{{ doctor.user.username }}'s Profile</h1>
+    <h1>{{ doctor.user.username }}'s profile</h1>
+    {% if doctor.picture %}
+    <img src="{{ doctor.picture.url }}">
+    {% endif %}
+    {% if doctor.hospital %}
     <p><a href={% url 'hospital' doctor.hospital.slug %}>Hospital: {{ doctor.hospital }}</a></p>
+    {% endif %}
     <p>Disease: {{ doctor.disease }}</p>
     <p>Price: {{ doctor.price }}</p>
-    <b id="like_count">{{ hospital.likes }}</b> people like this doctor.
-
+    <b id="like_count">{{ doctor.likes }}</b> people like this doctor.
+    {% if user.is_authenticated %}
+      <button id="likes" data-catid="{{ doctor.id }}" class="btn btn-primary" type="button">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Like
+      </button>
+    {% endif %}
   </div>
   {% else %}
   <strong>No doctor found. Try again.</strong>
