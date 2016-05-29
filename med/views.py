@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.forms.models import model_to_dict
 
 from .models import Hospital, Doctor
 from .forms import HospitalForm, UserForm, DoctorProfileForm
@@ -9,11 +10,12 @@ from .forms import HospitalForm, UserForm, DoctorProfileForm
 
 def index(request):
     hospital_list = Hospital.objects.all()
-    doctor_list = Doctor.objects.order_by('-likes')[:5]
+    doctor_list = Doctor.objects.all()
 
     context_dict = {'hospitals': hospital_list, 'doctors': doctor_list}
     return render(request, 'med/index.html', context_dict)
 
+@login_required
 def add_hospital(request):
     if request.method == 'POST':
         form = HospitalForm(request.POST)
@@ -27,30 +29,44 @@ def add_hospital(request):
 
     return render(request, 'med/add_hospital.html', {'form': form})
 
+@login_required
 def edit_profile(request):
     user = request.user
+    doc_profile = Doctor.objects.filter(user=user).first()
     if request.method == 'POST':
-        user_form = UserForm(data=request.POST, instance=request.user)
-        profile_form = DoctorProfileForm(data=request.POST, instance=request.user)
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            user.set_password(user.password)
-            user.save()
+        profile_form = DoctorProfileForm(data=request.POST, instance=doc_profile)
+        if profile_form.is_valid():
             profile = profile_form.save(commit=False)
             profile.user = user
             if 'picture' in request.FILES:
                 profile.picture = request.FILES['picture']
             profile.save()
-            return HttpResponseRedirect('med/profile/{0}/'.format(profile_name))
+            return HttpResponseRedirect('/med/profile/')
         else:
-             print(user_form.errors, profile_form.errors)
+             print(profile_form.errors)
+    elif doc_profile is not None:
+        profile_form = DoctorProfileForm(initial=model_to_dict(doc_profile))
     else:
-        user_form = UserForm(instance = user)
-        profile_form = DoctorProfileForm(instance = user)
-    return render(request, 'med/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+        profile_form = DoctorProfileForm()
+    return render(request, 'med/edit_profile.html', {'profile_form': profile_form, 'doc_profile': doc_profile})
 
-def profile(request):
-    pass
+def profile(request, profile_name):
+    context_dict = {}
+    try:
+        doctor = Doctor.objects.get(user__username=profile_name)
+        context_dict['doctor'] = doctor
+    except Doctor.DoesNotExist:
+        pass
+    return render(request, 'med/profile.html', context_dict)
+
 
 def hospital(request, hospital_name_slug):
-    pass
+    context_dict = {}
+    try:
+        hospital = Hospital.objects.get(slug=hospital_name_slug)
+        doctors = Doctor.objects.filter(hospital=hospital).order_by('-likes')
+        context_dict['hospital'] = hospital
+        context_dict['doctors'] = doctors
+    except Hospital.DoesNotExist:
+        pass
+    return render(request, 'med/hospital.html', context_dict)

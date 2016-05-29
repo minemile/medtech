@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block body_block %}
+{% if user.is_authenticated %}
+{% if doc_profile.picture %}
+<h2 class='form-signin-heading'>Your's picture</p>
+<img src="{{ doc_profile.picture.url }}" align="middle" class='img-responsive'>
+{% endif %}
+<h2 class="form-signin-heading">Edit {{ user }} profile</h2>
+<form id="user_form" method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% bootstrap_form profile_form %}
+  <br/>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% else %}
+<h1> You should <a href="{% url 'registration_register' %}">register</a> first</h1>
+{% endif %}
+{% endblock %}

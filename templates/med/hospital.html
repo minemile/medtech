@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}{{ hospital_name }}{% endblock %}
+{% block title %}{{ hospital.name }}{% endblock %}
 
 {% block body_block %}
 <div class="page-header">
-  <h1>{{ hospital_name }}</h1>
+  <h1>{{ hospital.name }} hospital</h1>
+  <p>Address: {{ hospital.address }}</p>
+  <p>Phone: {{ hospital.phone_number }}</p>
   <b id="like_count">{{ hospital.likes }}</b> people like this hospital.
   {% if user.is_authenticated %}
     <button id="likes" data-catid="{{ hospital.id }}" class="btn btn-primary" type="button">
@@ -13,16 +15,19 @@
 </div>
 
 <div class="panel panel-primary">
+  <h3>Hospital's doctors</h3>
   <br/>
   {% if hospital %}
     {% if doctors %}
       <ul>
         {% for doctor in doctors %}
           <li>
-            <a href="{% url 'goto' %}?page_id={{ doctor.id }}">{{ doctor.name }} {{doctor.surname}}</a>
+            <a href="{% url 'profile' doctor.user.username %}">{{ doctor.user.username }}</a>
           </li>
         {% endfor %}
       </ul>
     {% else %}
       <strong>No doctors in that hospital.</strong>
     {% endif %}
+  {% endif %}
+{% endblock %}
