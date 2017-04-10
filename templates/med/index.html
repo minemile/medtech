@@ -36,7 +36,7 @@
               {% if doctors %}
 	            	<ul class="list-group">
 		              {% for doctor in doctors %}
-		                <li class="list-group-item"><a href="{% url 'profile' doctor %}">{{ doctor }}</a></li>
+		                <li class="list-group-item"><a href="{% url 'profile' doctor.user.username %}">{{ doctor }}</a></li>
 		            	{% endfor %}
 	            	</ul>
 	        		{% else %}

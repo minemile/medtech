@@ -2,7 +2,7 @@
   <ul class="nav nav-sidebar">
     {% for doc in docs %}
       {% if doc == act_doc %}<li class="active"> {% else %}<li>{% endif %}
-        <a href="{% url 'profile' doc %}">{{ doc }}</a></li>
+        <a href="{% url 'profile' doc.user.username %}">{{ doc }}</a></li>
     {% endfor %}
   </ul>
 {% endif %}

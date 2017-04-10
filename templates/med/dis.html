@@ -2,7 +2,7 @@
   <ul class="nav nav-sidebar">
     {% for dis in diss %}
       {% if dis == act_doc %}<li class="active"> {% else %}<li>{% endif %}
-        <a href="{% url 'disease' dis %}">{{ dis }}</a></li>
+        <a href="{% url 'disease' dis.pk %}">{{ dis }}</a></li>
     {% endfor %}
   </ul>
 {% endif %}

@@ -16,7 +16,7 @@
       <ul>
         {% for doctor in doctors %}
           <li>
-            <a href="{% url 'profile' doctor.user.username %}">{{ doctor.user.username }}</a>
+            <a href="{% url 'profile' doctor.user.username %}">{{ doctor }}</a>
           </li>
         {% endfor %}
       </ul>

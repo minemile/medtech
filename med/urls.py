@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^disease/(?P<disease_name>[\w\-]+)/$', views.disease, name='disease'),
     url(r'^like_doc/$', views.like_doc, name='like_doc'),
     url(r'^suggest_disease/$', views.suggest_disease, name='suggest_disease'),
+    url(r'^add_disease', views.add_disease, name='add_disease'),
 ]
