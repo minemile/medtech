@@ -2,12 +2,12 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.forms.models import model_to_dict
-
-from .models import Hospital, Doctor, Disease
-from .forms import HospitalForm, UserForm, DoctorProfileForm, DiseaseForm
+from django.forms.models import model_to_dict, modelformset_factory, inlineformset_factory
+from .models import Hospital, Doctor, Disease, DiseaseAndDoctor
+from .forms import HospitalForm, DoctorProfileForm, DiseaseForm
 
 from .bing_search import run_query
+
 
 @login_required
 def add_disease(request):
@@ -15,6 +15,7 @@ def add_disease(request):
         form = DiseaseForm(request.POST)
         if form.is_valid():
             disease = form.save()
+
 
 def index(request):
     hospital_list = Hospital.objects.all()
@@ -43,10 +44,15 @@ def add_hospital(request):
 def edit_profile(request):
     user = request.user
     doc_profile = Doctor.objects.filter(user=user).first()
+    disease_n_doctors = DiseaseAndDoctor.objects.filter(doctor=doc_profile)
+    FS = inlineformset_factory(Doctor, DiseaseAndDoctor, fields=('disease', 'price', 'doctor'), extra=1)
+    disease_n_price = FS(instance=doc_profile)
     if request.method == 'POST':
-        profile_form = DoctorProfileForm(
-            data=request.POST, instance=doc_profile)
-        if profile_form.is_valid():
+        profile_form = DoctorProfileForm(data=request.POST, instance=doc_profile)
+        formset = FS(data=request.POST, instance=doc_profile)
+        if profile_form.is_valid() and formset.is_valid():
+            s = formset.save()
+            disease_n_price = FS(instance=doc_profile)
             profile = profile_form.save(commit=False)
             profile.user = user
             if 'picture' in request.FILES:
@@ -59,7 +65,9 @@ def edit_profile(request):
         profile_form = DoctorProfileForm(initial=model_to_dict(doc_profile))
     else:
         profile_form = DoctorProfileForm()
-    return render(request, 'med/edit_profile.html', {'profile_form': profile_form, 'doc_profile': doc_profile})
+        disease_n_price = FS(instance=doc_profile)
+    return render(request, 'med/edit_profile.html',
+                  {'profile_form': profile_form, 'doc_profile': doc_profile, 'disease_n_price': disease_n_price})
 
 
 def profile(request, profile_name):
