@@ -15,11 +15,21 @@
             {{ disease_n_price.management_form }}
             {% for form in disease_n_price %}
                 <div class="col-md-6">
-                {% bootstrap_field form.disease %}
+                    {% bootstrap_field form.disease %}
                 </div>
                 <div class="col-md-6">
-                {% bootstrap_field form.price %}
+                    <div class="col-md-9">
+                        {% bootstrap_field form.price %}
+                    </div>
+                    {% if disease_n_price.can_delete and not forloop.last %}
+                        <div class="col-md-3" style="margin-top: 20px">
+                        {% bootstrap_field form.DELETE %}
+                    {% endif %}
+                    </div>
                 </div>
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
             {% endfor %}
             <br/>
             <button type="submit" class="btn btn-default">Submit</button>

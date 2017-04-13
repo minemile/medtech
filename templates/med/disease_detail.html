@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}{{ disease }}{% endblock %}
+
+{% block body_block %}
+    <div class="page-header">
+        <h1>{{ disease }} disease</h1>
+        <p>Averate price for disease: {{ disease.avg_price }}</p>
+    </div>
+    <h3>Doctors, that can help you</h3>
+    <table class='table table-striped'>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        {% if dis_and_doc %}
+            {% for dis in dis_and_doc %}
+                <tr>
+                    <td>
+                        <a href="{% url 'profile' dis.doctor.user.username %}">{{ dis.doctor }}</a>
+                    </td>
+                    <td>{{ dis.doctor.category }}</td>
+                    <td>{{ dis.price }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td>No doctors in that hospital.</td>
+            </tr>
+        {% endif %}
+    </table>
+{% endblock %}

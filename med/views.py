@@ -1,58 +1,86 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.forms.models import model_to_dict, modelformset_factory, inlineformset_factory
+from django.forms.models import model_to_dict, inlineformset_factory
 from .models import Hospital, Doctor, Disease, DiseaseAndDoctor
 from .forms import HospitalForm, DoctorProfileForm, DiseaseForm
-
-from .bing_search import run_query
-
-
-@login_required
-def add_disease(request):
-    if request.method == 'POST':
-        form = DiseaseForm(request.POST)
-        if form.is_valid():
-            disease = form.save()
+from django.views import generic
 
 
-def index(request):
-    hospital_list = Hospital.objects.all()
-    doctor_list = Doctor.objects.all()
+class IndexView(generic.ListView):
+    template_name = 'med/index.html'
+    context_object_name = 'doctors_list'
 
-    context_dict = {'hospitals': hospital_list, 'doctors': doctor_list}
-    return render(request, 'med/index.html', context_dict)
+    def get_queryset(self):
+        return Doctor.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['hospitals_list'] = Hospital.objects.all()
+        return context
 
 
-@login_required
-def add_hospital(request):
-    if request.method == 'POST':
-        form = HospitalForm(request.POST)
-        if form.is_valid():
-            hos = form.save(commit=True)
-            return index(request)
-        else:
-            print(form.errors)
-    else:
-        form = HospitalForm()
+class DoctorProfileView(generic.DetailView):
+    template_name = 'med/doctor_detail.html'
+    context_object_name = 'doctor'
+    model = Doctor
 
-    return render(request, 'med/add_hospital.html', {'form': form})
+    def get_object(self, queryset=None):
+        return Doctor.objects.get(user__username=self.kwargs['profile_name'])
+
+    def get_context_data(self, **kwargs):
+        context = super(DoctorProfileView, self).get_context_data(**kwargs)
+        context['dis_and_doc'] = DiseaseAndDoctor.objects.filter(doctor=self.object)
+        return context
+
+
+class DiseaseView(generic.DetailView):
+    template_name = 'med/disease_detail.html'
+    context_object_name = 'disease'
+    model = Disease
+
+    def get_context_data(self, **kwargs):
+        context = super(DiseaseView, self).get_context_data(**kwargs)
+        context['dis_and_doc'] = DiseaseAndDoctor.objects.filter(disease=self.object)
+        return context
+
+
+class CreateHospital(generic.CreateView):
+    template_name = 'med/create_hospital.html'
+    model = Hospital
+    fields = ('name', 'address', 'phone_number')
+
+
+class HospitalView(generic.DetailView):
+    template_name = 'med/hospital_detail.html'
+    context_object_name = 'hospital'
+    model = Hospital
+
+    def get_object(self, queryset=None):
+        return Hospital.objects.get(slug=self.kwargs['hospital_name_slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super(HospitalView, self).get_context_data(**kwargs)
+        context['doctors_list'] = Doctor.objects.filter(hospital=self.object).order_by('-likes')
+        return context
 
 
 @login_required
 def edit_profile(request):
     user = request.user
     doc_profile = Doctor.objects.filter(user=user).first()
-    disease_n_doctors = DiseaseAndDoctor.objects.filter(doctor=doc_profile)
-    FS = inlineformset_factory(Doctor, DiseaseAndDoctor, fields=('disease', 'price', 'doctor'), extra=1)
-    disease_n_price = FS(instance=doc_profile)
+    fs = inlineformset_factory(Doctor, DiseaseAndDoctor, fields=('disease', 'price', 'doctor'), extra=1, can_delete=True)
+    disease_n_price = fs(instance=doc_profile)
     if request.method == 'POST':
         profile_form = DoctorProfileForm(data=request.POST, instance=doc_profile)
-        formset = FS(data=request.POST, instance=doc_profile)
+        formset = fs(data=request.POST, instance=doc_profile)
         if profile_form.is_valid() and formset.is_valid():
-            s = formset.save()
-            disease_n_price = FS(instance=doc_profile)
+            dis_and_doc = formset.save(commit=False)
+            for dis in dis_and_doc:
+                dis.disease.save()
+            for del_dis in formset.deleted_objects:
+                del_dis.delete()
+            formset.save()
             profile = profile_form.save(commit=False)
             profile.user = user
             if 'picture' in request.FILES:
@@ -65,43 +93,9 @@ def edit_profile(request):
         profile_form = DoctorProfileForm(initial=model_to_dict(doc_profile))
     else:
         profile_form = DoctorProfileForm()
-        disease_n_price = FS(instance=doc_profile)
+        disease_n_price = fs(instance=doc_profile)
     return render(request, 'med/edit_profile.html',
                   {'profile_form': profile_form, 'doc_profile': doc_profile, 'disease_n_price': disease_n_price})
-
-
-def profile(request, profile_name):
-    context_dict = {}
-    try:
-        doctor = Doctor.objects.get(user__username=profile_name)
-        context_dict['doctor'] = doctor
-    except Doctor.DoesNotExist:
-        pass
-    return render(request, 'med/profile.html', context_dict)
-
-
-def disease(request, disease_name):
-    context_dict = {}
-    try:
-        disease = Disease.objects.get(pk=disease_name)
-        doctors = Doctor.objects.filter(disease=disease)
-        context_dict['doctors'] = doctors
-        context_dict['disease'] = disease
-    except Disease.DoesNotExist:
-        pass
-    return render(request, 'med/disease.html', context_dict)
-
-
-def hospital(request, hospital_name_slug):
-    context_dict = {}
-    try:
-        hospital = Hospital.objects.get(slug=hospital_name_slug)
-        doctors = Doctor.objects.filter(hospital=hospital).order_by('-likes')
-        context_dict['hospital'] = hospital
-        context_dict['doctors'] = doctors
-    except Hospital.DoesNotExist:
-        pass
-    return render(request, 'med/hospital.html', context_dict)
 
 
 @login_required

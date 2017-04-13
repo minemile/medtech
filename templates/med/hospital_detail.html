@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{ hospital.name }}{% endblock %}
+
+{% block body_block %}
+    <div class="page-header">
+        <h1>{{ hospital.name }} hospital</h1>
+        <p>Address: {{ hospital.address }}</p>
+        <p>Phone: {{ hospital.phone_number }}</p>
+    </div>
+    <h3>Hospital's doctors</h3>
+    <table class='table table-striped'>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+        </tr>
+        </thead>
+        {% if hospital %}
+            {% if doctors_list %}
+
+                {% for doctor in doctors_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'profile' doctor.user.username %}">{{ doctor }}</a>
+                        </td>
+                        <td>
+                            {{ doctor.category }}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            {% else %}
+                <tr>
+                    <td>No doctors in that hospital.</td>
+                </tr>
+            {% endif %}
+        {% endif %}
+    </table>
+{% endblock %}

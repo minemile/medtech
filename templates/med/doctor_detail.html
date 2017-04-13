@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{{ doctor }}{% endblock %}
+{% load bootstrap3 %}
+{% block body_block %}
+    {% if doctor %}
+        <div class="page-header">
+            <h1>{{ doctor }} profile</h1>
+        </div>
+        <div class="col-md-3">
+            {% if doctor.picture %}
+                <img src="{{ doctor.picture.url }}"/>
+            {% else %}
+                <img src="/media/no-avatar.png"/>
+            {% endif %}
+        </div>
+        <div class="col-md-9">
+            {% if doctor.hospital %}
+                <p>Hospital: <a href={% url 'hospital' doctor.hospital.slug %}>{{ doctor.hospital }}</a></p>
+            {% endif %}
+            <p>Category: {{ doctor.category }}</p>
+            <table class='table table-striped'>
+                <thead>
+                <tr>
+                    <th>Disease</th>
+                    <th>Price</th>
+                </tr>
+                </thead>
+                {% if dis_and_doc %}
+                    {% for dis in dis_and_doc %}
+                        <tr>
+                            <td>{{ dis.disease }}</td>
+                            <td>{{ dis.price }}</td>
+                        </tr>
+                    {% endfor %}
+
+                {% else %}
+                    <tr>
+                        <td>No price for doctor</td>
+                    </tr>
+                {% endif %}
+            </table>
+            <b id="like_count">{{ doctor.likes }}</b> people like this doctor.
+            <br/>
+            {% if user.is_authenticated %}
+                <button id="likes" data-catid="{{ doctor.id }}" class="btn btn-primary" type="button">
+                    <span class="glyphicon glyphicon-thumbs-up"> Like</span>
+                </button>
+            {% endif %}
+        </div>
+    {% else %}
+        <strong>No doctor found. Try again.</strong>
+    {% endif %}
+{% endblock %}
