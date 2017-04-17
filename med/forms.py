@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Hospital, Doctor, Disease, Category, DiseaseAndDoctor
-from django.forms import BaseFormSet
+from .models import Hospital, Doctor, DiseaseAndDoctor
+
 
 class HospitalForm(forms.ModelForm):
     name = forms.CharField(max_length=100, help_text='Enter Hospital name.')
@@ -23,20 +23,20 @@ class UserForm(forms.ModelForm):
 
 
 class DoctorProfileForm(forms.ModelForm):
-
     class Meta:
         model = Doctor
         fields = ('hospital', 'category', 'picture')
 
 
 class DiseaseAndDoctorForm(forms.ModelForm):
-
     class Meta:
         model = DiseaseAndDoctor
         fields = ('doctor', 'price', 'disease')
 
 
-class DiseaseForm(forms.ModelForm):
-    class Meta:
-        model = Disease
-        fields = ('name', 'category')
+class DiseaseAndDoctorFormset(forms.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        dis_queryet = kwargs.pop('dis_queryset')
+        super(DiseaseAndDoctorFormset, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.fields['disease'].queryset = dis_queryet

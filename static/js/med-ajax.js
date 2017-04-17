@@ -9,7 +9,7 @@ $('#likes').click(function () {
 
 $('#suggestion').keyup(function () {
   var query;
-  query = $(this).val()
+  query = $(this).val();
   $.get('/med/suggest_disease/', {suggestion: query}, function (data) {
     $('#dises').html(data);
   });

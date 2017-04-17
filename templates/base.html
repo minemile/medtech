@@ -52,6 +52,7 @@
                 <li><a href="{% url 'index' %}">Home</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'add_hospital' %}">Add new hospital</a></li>
+                    <li><a href="{% url 'add_disease' %}">Add new disease</a></li>
                     <li><a href="{% url 'edit_profile' %}">Edit profile</a></li>
                     <li><a href="{% url 'auth_logout' %}?next=/med/">Logout</a></li>
                 {% else %}

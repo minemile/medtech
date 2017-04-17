@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^add_hospital', views.CreateHospital.as_view(), name='add_hospital'),
+    url(r'^add_disease_n_category', views.CreateDiseaseView.as_view(), name='add_disease'),
     url(r'^hospital/(?P<hospital_name_slug>[\w\-]+)/$', views.HospitalView.as_view(), name='hospital'),
     url(r'^profile/$', views.edit_profile, name='edit_profile'),
     url(r'^profile/(?P<profile_name>[\w\-]+)/$', views.DoctorProfileView.as_view(), name='profile'),

@@ -7,7 +7,7 @@
             <h2 class='form-signin-heading'>Your's picture</h2>
             <img src="{{ doc_profile.picture.url }}" align="middle" class='img-responsive'>
         {% endif %}
-        <h2 class="form-signin-heading">Edit {{ user }} profile</h2>
+        <h2 class="form-signin-heading">Edit profile</h2>
         <form id="user_form" method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
             {% csrf_token %}
             {% bootstrap_form profile_form %}

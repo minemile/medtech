@@ -4,7 +4,8 @@
 {% block body_block %}
     <div class="page-header">
         <h1>{{ disease }} disease</h1>
-        <p>Averate price for disease: {{ disease.avg_price }}</p>
+        <p>Average price for disease: {{ disease.avg_price }}</p>
+        <p>Disease's category: {{ disease.category }}</p>
     </div>
     <h3>Doctors, that can help you</h3>
     <table class='table table-striped'>
@@ -19,7 +20,8 @@
             {% for dis in dis_and_doc %}
                 <tr>
                     <td>
-                        <a href="{% url 'profile' dis.doctor.user.username %}">{{ dis.doctor }}</a>
+                        <a href="{% url 'profile' dis.doctor.user.username %}">{{ dis.doctor }}({{ dis.doctor.likes }}
+                            likes)</a>
                     </td>
                     <td>{{ dis.doctor.category }}</td>
                     <td>{{ dis.price }}</td>
@@ -31,4 +33,11 @@
             </tr>
         {% endif %}
     </table>
+    <div class="form-group">
+        <form id="hospital_form" method="post" action=".">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit" name="sort_price">Sort by likes</button>
+            <button class="btn btn-primary" type="submit" name="sort_likes">Sort by price</button>
+        </form>
+    </div>
 {% endblock %}

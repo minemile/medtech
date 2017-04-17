@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}Add disease and category{% endblock %}
+
+{% block body_block %}
+    <form id="disease_form" method="post" action="{% url 'add_disease' %}">
+        <h2 class="form-signin-heading">Add new disease</h2>
+        {% csrf_token %}
+
+        {% bootstrap_form form %}
+
+        <button class="btn btn-primary" type="submit" name="submit">Create Disease</button>
+    </form>
+{% endblock %}

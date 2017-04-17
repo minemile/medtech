@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.core.validators import RegexValidator
 from django.db.models import Avg
 
+
 class Hospital(models.Model):
     name = models.CharField(max_length=100, unique=True)
     address = models.CharField(max_length=100, unique=True)
@@ -57,6 +58,9 @@ class Disease(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('disease', kwargs={'pk': self.pk})
 
 
 class Doctor(models.Model):
